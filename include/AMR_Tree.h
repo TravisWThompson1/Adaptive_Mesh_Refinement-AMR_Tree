@@ -10,33 +10,51 @@
 #include "Point.h"
 #include "Control.h"
 
+template <class T>
 class AMR_Tree {
 
 public:
     // Public variables.
 
+    /**
+     * Constructors:
+     */
 
     // Public constructor.
     AMR_Tree(int dimensions, double *upper_bounds);
     // Default constructor.
     AMR_Tree();
 
-    // Public functions.
-    void insertPoint(Point *point_ptr);
-    void insertPoints(vector <Point *> points);
+
+
+    /**
+     * Public functions:
+     */
+    //template <class T>
+    void insert(T *T_ptr);
+
+    //template <class T>
+    void insert(vector<T *> T_ptr);
+
+    //template <class T>
+    void insert(T *T_ptr, int list_size);
+
     void restructure_tree();
-    Node* get_Head_Node();
+    Node<T>* get_Head_Node();
 
 
 
 
 protected:
+
+    /**
+     * Private variables:
+     */
+
     // Protected variables.
     int dimensions;
-    Node *head;
+    Node<T> *head;
     vector <double> lower_global, upper_global;
-
-    // Private functions.
 
 
 

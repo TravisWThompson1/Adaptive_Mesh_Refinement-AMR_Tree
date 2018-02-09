@@ -14,6 +14,7 @@
  * @param upper_bounds An array of the length of the system along each dimension. The number of elements in the array
  * should be the number of dimensions.
  */
+template <class T>
 AMR_Tree::AMR_Tree(int dimensions, double upper_bounds[]) {
     // Initialize dimensions.
     this->dimensions = dimensions;
@@ -29,7 +30,7 @@ AMR_Tree::AMR_Tree(int dimensions, double upper_bounds[]) {
     }
 
     // Initialize head node.
-    this->head = new Node(NULL, dimensions, lower_bounds, upper_bounds);
+    this->head = new Node<T>(NULL, dimensions, lower_bounds, upper_bounds);
 }
 
 
@@ -49,9 +50,10 @@ AMR_Tree::AMR_Tree(){
  *
  * @param point_ptr Pointer to a Point object that will be inserted into the AMR Tree.
  */
-void AMR_Tree::insertPoint(Point* point_ptr){
-    // Call insert_point method in the head Node.
-    this->head->insert_point(point_ptr);
+template <class T>
+void AMR_Tree::insert(T *T_ptr){
+    // Call insert method in the head Node.
+    this->head->insert(T_ptr);
 }
 
 
@@ -61,10 +63,26 @@ void AMR_Tree::insertPoint(Point* point_ptr){
  * @param point_ptr P The first Point pointer in a Point pointer array that will be inserted into the AMR Tree.
  * @param num_points Number of elements in Point pointer array to be added to the AMR_Tree.
  */
-void AMR_Tree::insertPoints(vector <Point *> points){
-    // Call insert_points method in the head Node.
-    this->head->insert_points(points);
+template <class T>
+void AMR_Tree::insert(vector<T *> T_ptrs){
+    // Call insert method in the head Node.
+    this->head->insert(T_ptrs);
 }
+
+
+
+/**
+ * Insert an array of Point pointers into the AMR Tree.
+ *
+ * @param point_ptr P The first Point pointer in a Point pointer array that will be inserted into the AMR Tree.
+ * @param num_points Number of elements in Point pointer array to be added to the AMR_Tree.
+ */
+template <class T>
+void AMR_Tree::insert(T *T_ptrs, int list_size){
+    // Call insert method in the head Node.
+    this->head->insert(T_ptrs, list_size);
+}
+
 
 
 

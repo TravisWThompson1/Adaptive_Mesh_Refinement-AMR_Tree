@@ -74,40 +74,60 @@ Node::~Node() {
 
 
 /**
- * Recursively inserts the pointer to a Point object into the proper Node based off of local boundaries. This function
- * either accepts the pointer into its array of Points, or it will determine the correct child to pass this pointer to
+ * Recursively inserts a single pointer of a T (template) object into the proper Node based off of local boundaries. This
+ * function either accepts the pointer into its array of T, or it will determine the correct child to pass this pointer to
  * and will call this function again recursively on its children until the lowest level Node is found with the correct
  * boundaries.
  *
- * @param point_ptr Pointer to a Point object that will be attempted to insert into this Node.
+ * @param T_ptr Pointer to a template T object that will be attempted to be inserted into this Node.
  */
-void Node::insert_point(Point *point_ptr) {
+template <class T>
+void Node::insert(T *T_ptr) {
     // Check if there are children.
     if (this->children.size() == 0) {
-        // Point should be held in this Node.
-        this->add_point(point_ptr);
+        // T should be held in this Node.
+        this->add(T_ptr);
     } else {
         // Determine child that this point should belong to.
-        int child_num = this->determine_child_number(point_ptr, 0, (int) pow(2, this->dimensions) - 1);
+        int child_num = this->determine_child_number(T_ptr, 0, (int) pow(2, this->dimensions) - 1);
         // Pass point to child.
-        this->children.at(child_num).insert_point(point_ptr);
+        this->children.at(child_num).insert(T_ptr);
     }
 }
 
 
 /**
- * Insert an array of Point pointers into the AMR_Tree object. This function calls the AMR_Tree::insert_point()
+ * Insert an array of pointers to objects into the AMR_Tree object. This function calls the AMR_Tree::insert()
  * function for each point in the given array.
  *
- * @param point_ptr Pointer to the first element of a Point pointer array.
- * @param num_points Number of Point pointers in the array to be added.
+ * @param T_ptrs Pointer to the first element of a Point pointer array.
  */
-void Node::insert_points(vector<Point *> points) {
-    // Call insert routine for all points given.
-    for (int i = 0; i < points.size(); i++) {
-        Point *ptr = points.at(i);
+template <class T>
+void Node::insert(vector<T *> T_ptrs) {
+    // Call insert routine for all T_ptrs given.
+    for (int i = 0; i < T_ptrs.size(); i++) {
+        T *T_ptr = T_ptrs.at(i);
         // Insert point.
-        this->insert_point(ptr);
+        this->insert(T_ptr);
+    }
+}
+
+
+
+
+/**
+ * Insert an array of pointers to objects into the AMR_Tree object. This function calls the AMR_Tree::insert()
+ * function for each point in the given array.
+ *
+ * @param T_ptrs Pointer to the first element of a Point pointer array.
+ */
+template <class T>
+void Node::insert(T *T_ptrs, int list_size) {
+    // Call insert routine for all T_ptrs given.
+    for (int i = 0; i < list_size; i++) {
+        T *T_ptr = T_ptrs[i];
+        // Insert point.
+        this->insert(T_ptr);
     }
 }
 
@@ -146,9 +166,9 @@ void Node::restructure_tree() {
         if (subdivide == true){
             // This Node will be subdivided.
             this->generate_children();
-            // Insert points by calling insert_points function on this node, which will properly pass the points to
+            // Insert points by calling insert function on this node, which will properly pass the points to
             // the newly generated children.
-            this->insert_points(this->local_points);
+            this->insert(this->local_points);
             // Empty this Node's pointer list.
             this->local_points.clear();
             // Reset center of mass information.
@@ -218,19 +238,19 @@ void Node::restructure_points() {
         Point *point = this->local_points[i + offset];
         bool local = this->check_point_boundaries(point);
         if (local == false) {
-            // This Point does not belong in this Node, it will be percolated up to its parent.
+            // This T does not belong in this Node, it will be percolated up to its parent.
             this->percolate_to_parent(point);
-            // Remove this Point from this Node.
+            // Remove this T from this Node.
             this->local_points.erase(this->local_points.begin() + i + offset);
             // Increase offset amount.
             offset += -1;
         }
     }
     // Now that Points have been percolated up into the correctly boundaried Nodes, we must percolate them down into
-    // the lowest Nodes that each Point belongs in. (Note: if this Node's local_points vector does not contain any
-    // Points, then the Node::insert_points() function will simply return.
+    // the lowest Nodes that each T belongs in. (Note: if this Node's local_points vector does not contain any
+    // Points, then the Node::insert() function will simply return.
     if (this->children.size() != 0) {
-        this->insert_points(this->local_points);
+        this->insert(this->local_points);
     }
 }
 
@@ -276,7 +296,8 @@ void Node::update_COM() {
  * when this function is called.
  * @return Returns the integer value of the index of the Point pointer array of children.
  */
-int Node::determine_child_number(Point *point_ptr, int min, int max) {
+template <class T>
+int Node::determine_child_number(T *T_ptr, int min, int max) {
     // Determine number of children in the range min to max (1-indexed).
     int num_of_children = max - min + 1;
     // Determine the current dimension number to divide axes (total_dimensions - num_of_checked_dimensions).
@@ -288,13 +309,13 @@ int Node::determine_child_number(Point *point_ptr, int min, int max) {
     }
     // Calculate dividing value.
     double middle_value = (this->upper_local[dim] - this->lower_local[dim]) / 2 + (this->lower_local[dim]);
-    // Determine if the Point falls within the lower or upper half of the current node.
-    if (point_ptr->getCoordinates().at(dim) <= middle_value){
-        // Point belongs on lower side of this axis.
-        return this->determine_child_number(point_ptr, min, num_of_children/2+min-1);
+    // Determine if the T falls within the lower or upper half of the current node.
+    if (T_ptr->getCoordinates().at(dim) <= middle_value){
+        // T belongs on lower side of this axis.
+        return this->determine_child_number(T_ptr, min, num_of_children/2+min-1);
     } else {
-        // Point belongs on the upper side of this axis.
-        return this->determine_child_number(point_ptr, num_of_children/2+min, max);
+        // T belongs on the upper side of this axis.
+        return this->determine_child_number(T_ptr, num_of_children/2+min, max);
     }
 }
 
@@ -302,19 +323,12 @@ int Node::determine_child_number(Point *point_ptr, int min, int max) {
 /**
  * Add point to this Node's Point pointer array.
  *
- * @param point_ptr Point to be added to this Node's Point pointer array.
+ * @param T_ptr Point to be added to this Node's Point pointer array.
  */
-void Node::add_point(Point *point_ptr) {
-    // Add this Point to Point array.
-    local_points.push_back(point_ptr);
-    // Increase the position times mass vector.
-    vector<double> coords = point_ptr->getCoordinates();
-    for (int dim = 0; dim < this->dimensions; dim++){
-        // Pos_mass = x1*m1 + x2*m2 + x3*m3 + ...
-        this->pos_mass[dim] = this->pos_mass[dim] + (point_ptr->getMass() * coords[dim]);
-    }
-    // Increase the total mass.
-    this->total_mass += point_ptr->getMass();
+template <class T>
+void Node::add(T *T_ptr) {
+    // Add this T to T array.
+    local_points.push_back(T_ptr);
 }
 
 
@@ -349,7 +363,7 @@ void Node::calculate_child_boundaries(double *child_lower, double *child_upper, 
     }
     // Calculate dividing value.
     double middle_value = (this->upper_local[dim] - this->lower_local[dim]) / 2.0 + (this->lower_local[dim]);
-    // Determine if the Point falls within the lower or upper half of the current node.
+    // Determine if the T falls within the lower or upper half of the current node.
     if (child_index < min + num_of_children/2){
         // This dimension's boundary belongs on lower side of the middle of this Node's boundaries.
         child_lower[dim] = this->lower_local[dim];
@@ -375,8 +389,8 @@ void Node::depopulate_node() {
         std::cout << "Attempted call to function Node::depopulate_node() to pass items to a NULL parent. Node refuses to depopulate." << std::endl;
     } else {
         for (int i = 0; i < this->local_points.size(); i++){
-            // Add all Point pointers to parent.
-            this->parent->add_point(this->local_points[i]);
+            // Add all T pointers to parent.
+            this->parent->add(this->local_points[i]);
         }
     }
 }
@@ -423,83 +437,39 @@ bool Node::check_overpopulation_criteria() {
 /**
  * Given a Point pointer, this function will check if the Point's coordinates are within this Node's boundaries.
  *
- * @param point Point pointer to be check if it is within the local Node's boundaries.
+ * @param T_ptr Point pointer to be check if it is within the local Node's boundaries.
  * @return True if the Point is within this Node's boundaries, or false if it is not.
  */
-bool Node::check_point_boundaries(Point *point) {
-    // Get Point's coordinates.
-    vector<double> coords = point->getCoordinates();
+template <class T>
+bool Node::check_point_boundaries(T *T_ptr) {
+    // Get T's coordinates.
+    vector<double> coords = T_ptr->getCoordinates();
     // Check if point is within local boundaries of this Node.
     for (int dim = 0; dim < this->dimensions; dim++){
         if ((coords[dim] < this->lower_local[dim]) || (coords[dim] > this->upper_local[dim])){
-            // Point is not within local boundaries.
+            // T is not within local boundaries.
             return false;
         }
     }
-    // Point is within local boundaries.
+    // T is within local boundaries.
     return true;
 }
 
 
 /**
  * Inserts Point pointer into the Parent Node.
- * @param point Pointer pointer to be added to the parent Node.
+ * @param T_ptr Pointer pointer to be added to the parent Node.
  */
-void Node::percolate_to_parent(Point *point) {
+template <class T>
+void Node::percolate_to_parent(T *T_ptr) {
     // Check if there is a parent node to pass items to.
     if (this->parent == NULL){
         std::cout << "Attempted call to function Node::percolate_to_parent() to pass items to a NULL parent. Node refuses to pass items." << std::endl;
     } else {
-        // Insert Point pointer into parent Node.
-        this->parent->add_point(point);
-        // Update the position*mass vector for this Node.
-        vector<double> coords = point->getCoordinates();
-        for (int dim = 0; dim < this->dimensions; dim++){
-            // Pos_mass = x1*m1 + x2*m2 + x3*m3 + ...
-            this->pos_mass[dim] = this->pos_mass[dim] - (point->getMass() * coords[dim]);
-        }
-        // Increase the total mass.
-        this->total_mass -= point->getMass();
+        // Insert T pointer into parent Node.
+        this->parent->add(T_ptr);
     }
 }
-
-
-
-vector<double> Node::get_COM() {
-    vector<double> center_of_mass;
-    // Calculate center of mass.
-    for (int dim = 0; dim < this->dimensions; dim++){
-        // Pos_mass = x1*m1 + x2*m2 + x3*m3 + ...
-        center_of_mass[dim] = this->pos_mass[dim] / this->total_mass;
-    }
-    return center_of_mass;
-}
-
-
-
-void Node::reset_COM() {
-    // Reset total mass to zero.
-    this->total_mass = 0;
-    //Reset position*mass vector.
-    for (int dim = 0; dim < this->dimensions; dim++){
-       this->pos_mass[dim] = 0;
-    }
-}
-
-
-double Node::get_total_mass() {
-    return this->total_mass;
-}
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -9,9 +9,9 @@
 #include <vector>
 using namespace std;
 
-// Initial size of Point array held by each Node.
+// Initial size of T array held by each Node.
 //#define INITIAL_POINT_ARRAY_SIZE 10
-// Size of increase to a Point array when an increase of size is needed.
+// Size of increase to a T array when an increase of size is needed.
 //#define POINT_ARRAY_INCREASE 10
 
 

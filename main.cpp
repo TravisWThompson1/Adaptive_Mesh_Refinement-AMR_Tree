@@ -18,16 +18,16 @@ int main() {
     // Number of test points to add to the system.
     int number_points = 500000;
 
-    // Initialize an a vector of *Point.
+    // Initialize an a vector of *T.
     vector <Point *> points;
     points.reserve(number_points);
 
-    // Initialize random object for creating random coordinates for each Point.
+    // Initialize random object for creating random coordinates for each T.
     std::uniform_real_distribution<double> unif(0, upper[0]);
     std::default_random_engine rand_eng;
 
 
-    // Create random coordinates for each Point in each dimension.
+    // Create random coordinates for each T in each dimension.
     for (int dim = 0; dim < number_points; dim++){
         // Initialize mass.
         int mass = dim;
@@ -36,13 +36,13 @@ int main() {
         for (int i = 0; i < dimensions; i++){
             rand_coords[i] = unif(rand_eng);
         }
-        // Create new Point object.
+        // Create new T object.
         points.push_back(new Point(mass, dimensions, rand_coords));
     }
     std::cout << number_points << " Points created." << std::endl;
 
     // Insert points into AMR_Tree.
-    tree.insertPoints(points);
+    tree.insert(points);
     std::cout << number_points << " Points inserted into AMR Tree." << std::endl;
 
     // Restructure tree - tree should be restructured after every coordinate update.
