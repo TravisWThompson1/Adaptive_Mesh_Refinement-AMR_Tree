@@ -23,14 +23,13 @@ INC_DIR = include
 ## File list ##
 
 # Source files.
-SRCS := main.cpp $(SRC_DIRS)/Point.cpp $(SRC_DIRS)/Node.cpp $(SRC_DIRS)/Static_Mesh_Tree.cpp
-#OBJS = $(subst .cc,.o,$(SRCS))
+SRCS = main.cpp $(SRC_DIR)/Point.cpp
 
 # Include files.
-INC_DIRS := $(SRC_DIRS)/Control.h $(SRC_DIRS)/Point.h $(SRC_DIRS)/Node.h $(SRC_DIRS)/AMR_Tree.h $(SRC_DIRS)/Static_Mesh_Tree.h
+INC_DIRS = $(INC_DIR)/Control.h $(INC_DIR)/Point.h $(INC_DIR)/Node.h $(INC_DIR)/AMR_Tree.h $(INC_DIR)/Static_Mesh_Tree.h
 
 # Object files:
-OBJS = $(OBJ_DIR)/main.o $(OBJ_DIR)/cuda_kernel.o
+OBJS = $(OBJ_DIR)/main.o $(OBJ_DIR)/Point.o
 
 ##########################################################
 
@@ -38,7 +37,8 @@ OBJS = $(OBJ_DIR)/main.o $(OBJ_DIR)/cuda_kernel.o
 
 # CC compiler options:
 CC=g++
-CC_FLAGS= -std=c++11 -mcmodel=medium
+CC_FLAGS= -std=c++11
+#CC_FLAGS=-std=c++11 -mcmodel=medium
 CC_LIBS=
 
 ##########################################################
@@ -55,48 +55,14 @@ $(OBJ_DIR)/%.o : %.cpp
 	$(CC) $(CC_FLAGS) -c $< -o $@
 
 # Compile C++ source files to object files:
-$(OBJ_DIR)/%.o : $(SRC_DIR)/%.cpp $(INC_DIR)/%.h
+$(OBJ_DIR)/%.o : $(SRC_DIR)/%.cpp
 	$(CC) $(CC_FLAGS) -c $< -o $@
-
-# Clean objects in object directory.
-clean:
-	$(RM) bin/* *.o $(EXE)
-
-
-
-
-
-
-
-
-
-SRCS := main.cpp $(SRC_DIRS)/Point.cpp $(SRC_DIRS)/Node.cpp $(SRC_DIRS)/Static_Mesh_Tree.cpp
-#OBJS := $(SRCS:%=$(BUILD_DIR)/%.o)
-OBJS = $(subst .cc,.o,$(SRCS))
-
-INC_DIRS := $(SRC_DIRS)/Control.h $(SRC_DIRS)/Point.h $(SRC_DIRS)/Node.h $(SRC_DIRS)/AMR_Tree.h $(SRC_DIRS)/Static_Mesh_Tree.h
-
-CPPFLAGS ?=
-
-$(BUILD_DIR)/$(TARGET_EXEC): $(OBJS)
-	$(CXX) $(OBJS) -o $@ $(LDFLAGS)
-
-
-# c++ source
-$(BUILD_DIR)/%.cpp.o: %.cpp
-	$(MKDIR_P) $(dir $@)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
 
 .PHONY: clean
-
+# Clean objects in object directory.
 clean:
-	$(RM) -r $(BUILD_DIR)
-
-MKDIR_P ?= mkdir -p
-
-
-
+	rm -f $(OBJ_DIR)/* *.o $(EXE) $(EXE).*
 
 
 
