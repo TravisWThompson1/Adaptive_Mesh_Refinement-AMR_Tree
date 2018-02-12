@@ -8,7 +8,8 @@
 #include "AMR_Tree.h"
 
 
-class Static_Mesh_Tree : public AMR_Tree {
+template <class T>
+class Static_Mesh_Tree : public AMR_Tree<T> {
 
 public:
 

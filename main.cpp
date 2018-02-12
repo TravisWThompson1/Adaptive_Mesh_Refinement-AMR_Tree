@@ -10,13 +10,15 @@ int main() {
     int dimensions = 3;
 
     // Define upper bounds, lower bounds defaulted at 0.
-    double upper [dimensions] = {10, 10, 10};
+    double upper [3] = {10, 10, 10};
 
     // Initialize AMR tree.
-    AMR_Tree tree(dimensions, upper);
+    AMR_Tree<Point> tree(dimensions, upper);
 
     // Number of test points to add to the system.
-    int number_points = 500000;
+    int number_points = 500;
+
+    std::cout << tree.get_Head_Node()->get_Dim() << std::endl;
 
     // Initialize an a vector of *T.
     vector <Point *> points;
