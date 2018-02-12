@@ -15,7 +15,7 @@
  * should be the number of dimensions.
  */
 template <class T>
-AMR_Tree::AMR_Tree(int dimensions, double upper_bounds[]) {
+AMR_Tree<T>::AMR_Tree(int dimensions, double upper_bounds[]) {
     // Initialize dimensions.
     this->dimensions = dimensions;
 
@@ -38,7 +38,7 @@ AMR_Tree::AMR_Tree(int dimensions, double upper_bounds[]) {
 /**
  * Default constructor.
  */
-AMR_Tree::AMR_Tree(){
+template <class T> AMR_Tree<T>::AMR_Tree(){
 
 }
 
@@ -51,7 +51,7 @@ AMR_Tree::AMR_Tree(){
  * @param point_ptr Pointer to a Point object that will be inserted into the AMR Tree.
  */
 template <class T>
-void AMR_Tree::insert(T *T_ptr){
+void AMR_Tree<T>::insert(T *T_ptr){
     // Call insert method in the head Node.
     this->head->insert(T_ptr);
 }
@@ -64,7 +64,7 @@ void AMR_Tree::insert(T *T_ptr){
  * @param num_points Number of elements in Point pointer array to be added to the AMR_Tree.
  */
 template <class T>
-void AMR_Tree::insert(vector<T *> T_ptrs){
+void AMR_Tree<T>::insert(vector<T *> T_ptrs){
     // Call insert method in the head Node.
     this->head->insert(T_ptrs);
 }
@@ -78,7 +78,7 @@ void AMR_Tree::insert(vector<T *> T_ptrs){
  * @param num_points Number of elements in Point pointer array to be added to the AMR_Tree.
  */
 template <class T>
-void AMR_Tree::insert(T *T_ptrs, int list_size){
+void AMR_Tree<T>::insert(T *T_ptrs, int list_size){
     // Call insert method in the head Node.
     this->head->insert(T_ptrs, list_size);
 }
@@ -89,7 +89,8 @@ void AMR_Tree::insert(T *T_ptrs, int list_size){
 /**
  * Recursively passes through all Nodes to check if any Nodes should be further subdivided or merged.
  */
-void AMR_Tree::restructure_tree() {
+template <class T>
+void AMR_Tree<T>::restructure_tree() {
     // Call Node::restructure_points() routine on head Node.
     this->head->restructure_points();
     // Call Node::restucture_tree() routine on head Node.
@@ -105,8 +106,8 @@ void AMR_Tree::restructure_tree() {
 
 
 // Extra stuff
-
-Node *AMR_Tree::get_Head_Node() {
+template <class T>
+Node<T>* AMR_Tree<T>::get_Head_Node() {
     return head;
 }
 

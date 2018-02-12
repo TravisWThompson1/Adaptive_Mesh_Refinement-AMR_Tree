@@ -13,9 +13,7 @@ using namespace std;
 #ifndef ADAPTIVE_MESH_REFINEMENT_NODE_H
 #define ADAPTIVE_MESH_REFINEMENT_NODE_H
 
-
-template <class T>
-class Node {
+template <class T> class Node {
 
 public:
 
@@ -24,7 +22,7 @@ public:
      */
 
     // Define constructor.
-    Node(Node *parent, int dimensions, double lower[], double upper[]);
+    Node(Node<T> *parent, int dimensions, double lower[], double upper[]);
     // Empty constructor.
     Node();
 

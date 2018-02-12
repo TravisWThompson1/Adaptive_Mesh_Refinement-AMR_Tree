@@ -23,7 +23,8 @@
  * @param lower Local lower boundary given in an array of length "dimensions".
  * @param upper Local upper boundary given in an array of length "dimensions".
  */
-Node::Node(Node *parent, int dimensions, double lower[], double upper[]) {
+template <class T>
+Node<T>::Node(Node<T> *parent, int dimensions, double lower[], double upper[]) {
     // Initialize parent node.
     this->parent = parent;
 
@@ -41,19 +42,14 @@ Node::Node(Node *parent, int dimensions, double lower[], double upper[]) {
     // Initialize children vector array to the size of 2^dimensions.
     this->children.reserve((int) pow(2, dimensions));
 
-    // Initialize total mass as zero.
-    this->total_mass = 0;
-    // Initialize center of mass at the center of the Node's boundaries.
-    for (int dim = 0; dim < dimensions; dim++){
-        this->pos_mass.push_back(0);
-    }
 }
 
 
 /**
  * The empty Node constructor should only be used to create an empty Node instance, generally for array initialization.
  */
-Node::Node() {};
+template <class T>
+Node<T>::Node() {};
 
 
 
@@ -61,7 +57,8 @@ Node::Node() {};
  * Deconstructor.
  */
 /*
-Node::~Node() {
+template <class T>
+Node<T>::~Node() {
     delete [] this->upper_local;
     delete [] this->lower_local;
     delete [] this->local_points;
@@ -82,7 +79,7 @@ Node::~Node() {
  * @param T_ptr Pointer to a template T object that will be attempted to be inserted into this Node.
  */
 template <class T>
-void Node::insert(T *T_ptr) {
+void Node<T>::insert(T *T_ptr) {
     // Check if there are children.
     if (this->children.size() == 0) {
         // T should be held in this Node.
@@ -103,7 +100,7 @@ void Node::insert(T *T_ptr) {
  * @param T_ptrs Pointer to the first element of a Point pointer array.
  */
 template <class T>
-void Node::insert(vector<T *> T_ptrs) {
+void Node<T>::insert(vector<T *> T_ptrs) {
     // Call insert routine for all T_ptrs given.
     for (int i = 0; i < T_ptrs.size(); i++) {
         T *T_ptr = T_ptrs.at(i);
@@ -122,7 +119,7 @@ void Node::insert(vector<T *> T_ptrs) {
  * @param T_ptrs Pointer to the first element of a Point pointer array.
  */
 template <class T>
-void Node::insert(T *T_ptrs, int list_size) {
+void Node<T>::insert(T *T_ptrs, int list_size) {
     // Call insert routine for all T_ptrs given.
     for (int i = 0; i < list_size; i++) {
         T *T_ptr = T_ptrs[i];
@@ -136,7 +133,8 @@ void Node::insert(T *T_ptrs, int list_size) {
 /**
  * Creates 2^dimensions children Nodes to divide this Node's volume.
  */
-void Node::generate_children() {
+template <class T>
+void Node<T>::generate_children() {
     // Calculate the number of children.
     int num_children = pow(2, this->dimensions);
     // Initialize new children nodes.
@@ -148,7 +146,7 @@ void Node::generate_children() {
         //std::cout << "(" << child_lower[0] << "," << child_lower[1] << "," << child_lower[2] << ") (" <<
         //          child_upper[0] << "," << child_upper[1] << "," << child_upper[2] << ")" << std::endl;
         // Create new child Node.
-        this->children.push_back(Node(this, this->dimensions, child_lower, child_upper));
+        this->children.push_back(Node<T>(this, this->dimensions, child_lower, child_upper));
     }
 }
 
@@ -158,7 +156,8 @@ void Node::generate_children() {
  * typically called after the Node::restructure_points() function, which is typically called after the Points contained
  * in this AMR Tree have had their position updated.
  */
-void Node::restructure_tree() {
+template <class T>
+void Node<T>::restructure_tree() {
     // Check if there are children Nodes.
     if (this->children.size() == 0) {
         // No children nodes, this Node is the lowest on its chain.
@@ -171,11 +170,9 @@ void Node::restructure_tree() {
             this->insert(this->local_points);
             // Empty this Node's pointer list.
             this->local_points.clear();
-            // Reset center of mass information.
-            this->reset_COM();
             // Move to children nodes.
             for (int i = 0; i < this->children.size(); i++){
-                Node *child = &(this->children[i]);
+                Node<T> *child = &(this->children[i]);
                 child->restructure_tree();
             }
         }
@@ -225,7 +222,8 @@ void Node::restructure_tree() {
  * will call the insert_point function to insert it into that Node, or recursively into its children, as handled by the
  * insert_point function.
  */
-void Node::restructure_points() {
+template <class T>
+void Node<T>::restructure_points() {
     // Move to children Nodes.
     for (int i = 0; i < this->children.size(); i++){
         // Call this function on children Nodes.
@@ -256,30 +254,6 @@ void Node::restructure_points() {
 
 
 
-void Node::update_COM() {
-    // Move to children Nodes.
-    for (int i = 0; i < this->children.size(); i++){
-        // Call this function on children Nodes.
-        this->children.at(i).update_COM();
-    }
-    // Calculate center of mass for Nodes with children (w/out children have already been calculated.
-    if (this->children.size() != 0){
-        for (int i = 0; i < this->children.size(); i++){
-            // Calculate the center of mass of this Node by the children's center of masses.
-            vector<double> child_COM = this->children.at(i).get_COM();
-            for (int dim = 0; dim < this->dimensions; dim++){
-                // Pos_mass = x1*m1 + x2*m2 + x3*m3 + ... of the children Nodes.
-                this->pos_mass[dim] = this->pos_mass[dim] + (this->children[i].get_total_mass() * child_COM[dim]);
-            }
-        }
-    }
-}
-
-
-
-
-
-
 
 
 
@@ -297,7 +271,7 @@ void Node::update_COM() {
  * @return Returns the integer value of the index of the Point pointer array of children.
  */
 template <class T>
-int Node::determine_child_number(T *T_ptr, int min, int max) {
+int Node<T>::determine_child_number(T *T_ptr, int min, int max) {
     // Determine number of children in the range min to max (1-indexed).
     int num_of_children = max - min + 1;
     // Determine the current dimension number to divide axes (total_dimensions - num_of_checked_dimensions).
@@ -326,7 +300,7 @@ int Node::determine_child_number(T *T_ptr, int min, int max) {
  * @param T_ptr Point to be added to this Node's Point pointer array.
  */
 template <class T>
-void Node::add(T *T_ptr) {
+void Node<T>::add(T *T_ptr) {
     // Add this T to T array.
     local_points.push_back(T_ptr);
 }
@@ -351,7 +325,8 @@ void Node::add(T *T_ptr) {
  * @param min Maximum index of the range to search of children indexes (from 0 to (2^dimensions)-1). Value of the first
  * call to this function should be (2^dimensions)-1.
  */
-void Node::calculate_child_boundaries(double *child_lower, double *child_upper, int child_index, int min, int max) {
+template <class T>
+void Node<T>::calculate_child_boundaries(double *child_lower, double *child_upper, int child_index, int min, int max) {
     // Determine number of children in the range min to max (1-indexed).
     int num_of_children = max - min + 1;
     // Determine the current dimension number to divide axes (total_dimensions - num_of_checked_dimensions).
@@ -380,10 +355,13 @@ void Node::calculate_child_boundaries(double *child_lower, double *child_upper, 
 }
 
 
+
+
 /**
  * Pass all Point pointers to the parents Node.
  */
-void Node::depopulate_node() {
+template <class T>
+void Node<T>::depopulate_node() {
     // Check if there is a parent node to pass items to.
     if (this->parent == NULL){
         std::cout << "Attempted call to function Node::depopulate_node() to pass items to a NULL parent. Node refuses to depopulate." << std::endl;
@@ -400,7 +378,8 @@ void Node::depopulate_node() {
  * Check if the total number of points in the children Nodes are greater than MIN_POINTS_ALLOWED.
  * @return True if there are less points than the minimum, or false if there are more than the minimum.
  */
-bool Node::check_underpopulation_criteria(){
+template <class T>
+bool Node<T>::check_underpopulation_criteria(){
     // Count the number of points in the children Node.
     int count = 0;
     for (int i = 0; i < (int) pow(2, this->dimensions); i++){
@@ -421,7 +400,8 @@ bool Node::check_underpopulation_criteria(){
  * Check if the number of Points this Node contains is ove the MAX_POINTS_ALLOWED value and should be subdivided.
  * @return True if this Node is overpopulated, or false if it is not.
  */
-bool Node::check_overpopulation_criteria() {
+template <class T>
+bool Node<T>::check_overpopulation_criteria() {
     // Check if there are more points in this Node than the MAX_POINTS_ALLOWED value.
     int size = this->local_points.size();
     if (this->local_points.size() > MAX_POINTS_ALLOWED){
@@ -441,7 +421,7 @@ bool Node::check_overpopulation_criteria() {
  * @return True if the Point is within this Node's boundaries, or false if it is not.
  */
 template <class T>
-bool Node::check_point_boundaries(T *T_ptr) {
+bool Node<T>::check_point_boundaries(T *T_ptr) {
     // Get T's coordinates.
     vector<double> coords = T_ptr->getCoordinates();
     // Check if point is within local boundaries of this Node.
@@ -461,7 +441,7 @@ bool Node::check_point_boundaries(T *T_ptr) {
  * @param T_ptr Pointer pointer to be added to the parent Node.
  */
 template <class T>
-void Node::percolate_to_parent(T *T_ptr) {
+void Node<T>::percolate_to_parent(T *T_ptr) {
     // Check if there is a parent node to pass items to.
     if (this->parent == NULL){
         std::cout << "Attempted call to function Node::percolate_to_parent() to pass items to a NULL parent. Node refuses to pass items." << std::endl;
@@ -476,12 +456,14 @@ void Node::percolate_to_parent(T *T_ptr) {
 
 
 // Extra stuff
-
-int Node::get_Dim() {
+template <class T>
+int Node<T>::get_Dim() {
     return this->dimensions;
 }
 
-int Node::get_depth() {
+
+template <class T>
+int Node<T>::get_depth() {
     if (this->children.size() == 0){
         return 1;
     } else {

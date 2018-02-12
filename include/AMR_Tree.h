@@ -10,8 +10,7 @@
 #include "Point.h"
 #include "Control.h"
 
-template <class T>
-class AMR_Tree {
+template <class T> class AMR_Tree {
 
 public:
     // Public variables.
