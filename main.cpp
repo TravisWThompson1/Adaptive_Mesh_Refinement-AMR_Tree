@@ -83,13 +83,6 @@ int main() {
 
 
 
-void rand_coords(double *coord, int dimensions, double length){
-
-}
-
-
-
-
 
 
 
