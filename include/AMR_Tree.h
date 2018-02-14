@@ -111,7 +111,7 @@ public:
      */
     void set_depth(int depth){
         // Call head node to set depth.
-        this->head->set_depth(depth);
+        this->head->set_depth(depth - 1);
     }
 
 
