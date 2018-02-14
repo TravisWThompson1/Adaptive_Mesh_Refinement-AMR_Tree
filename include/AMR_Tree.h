@@ -86,11 +86,20 @@ public:
 
 
     /**
+    * Recursively passes through all Nodes to check if any Points (or class used in generic template) should be moved
+     * into different Nodes due to coordinate updates.
+    */
+    void restructure_points() {
+        // Call Node::restructure_points() routine on head Node.
+        this->head->restructure_points();
+    }
+
+
+
+    /**
     * Recursively passes through all Nodes to check if any Nodes should be further subdivided or merged.
     */
     void restructure_tree() {
-        // Call Node::restructure_points() routine on head Node.
-        this->head->restructure_points();
         // Call Node::restucture_tree() routine on head Node.
         this->head->restructure_tree();
     }

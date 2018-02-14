@@ -30,6 +30,23 @@ public:
 
 
 
+    /**
+     * Public functions
+     */
+
+
+    /**
+     * Checks all objects in adaptive mesh tree to see if any objects need to be moved to new Nodes due to recent
+     * coordinate updates. Then, the the tree will be restructured if existing Nodes have become to populated or too
+     * unpopulated. Calls restructure_points() and restructure_tree() functions in super (AMR_Tree).
+     */
+    void updateTree(){
+        // Restructure objects in tree.
+        this->restructure_points();
+        // Restructure tree if necessary.
+        this->restructure_tree();
+    }
+
 
 
 private:
