@@ -116,6 +116,16 @@ public:
 
 
     /**
+     * Returns the depth of the left-most subtree.
+     * @return Depth of the left-most subtree.
+     */
+    int get_depth(){
+        // Return left-most depth.
+        return this->get_Head_Node()->get_depth();
+    }
+
+
+    /**
      * Return pointer to the head Node.
      * @return Node pointer to head node.
      */

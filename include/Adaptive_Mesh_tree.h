@@ -7,7 +7,7 @@
 
 #include "AMR_Tree.h"
 
-template <class T> class Adaptive_Mesh_Tree : public AMR_Tree {
+template <class T> class Adaptive_Mesh_Tree : public AMR_Tree<T> {
 
 public:
 
@@ -38,10 +38,11 @@ public:
      */
     void updateTree(){
         // Restructure objects in tree.
-        restructure_points();
+        this->restructure_points();
         // Restructure tree if necessary.
-        restructure_tree();
+        this->restructure_tree();
     }
+
 
 
 
