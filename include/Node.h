@@ -219,6 +219,27 @@ public:
 
 
 
+    /**
+     * Recursively generate children nodes until depth is achieved.
+     * @param depth Depth of AMR tree (number of levels).
+     */
+    void set_depth(int depth){
+        // Check for depth achieved.
+        if (depth == 0){
+            return;
+        }
+        // Generate children.
+        this->generate_children();
+        // Decrease depth counter.
+        depth -= 1;
+        // Recursively call set_depth(depth-1) for all children.
+        for (int i = 0; i < this->children.size(); i++){
+            this->children.at(i).set_depth(depth);
+        }
+    }
+
+
+
 
     /**
     * Recursively passes through all Nodes' children to check if any points should be redistributed into different local

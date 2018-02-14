@@ -13,8 +13,19 @@ class Static_Mesh_Tree : public AMR_Tree<T> {
 
 public:
 
+    int mDepth;
+    int mDimensions;
+    double *mUpperBounds;
+
     // Constructor.
-    Static_Mesh_Tree(int depth, int dimensions, double *upper_bounds);
+    Static_Mesh_Tree(int depth, int dimensions, double *upper_bounds) : AMR_Tree<T>(dimensions, upper_bounds){
+        // Set member variables.
+        mDepth = depth;
+        mDimensions = dimensions;
+        mUpperBounds = upper_bounds;
+        // Set depth of AMR Tree.
+        this->set_depth(depth);
+    }
 
 
 

@@ -1,6 +1,7 @@
 #include <iostream>
 #include <random>
 #include "include/AMR_Tree.h"
+#include "include/Static_Mesh_Tree.h"
 #include "include/Point.h"
 #include <iomanip>
 

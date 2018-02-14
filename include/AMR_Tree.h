@@ -97,6 +97,16 @@ public:
 
 
     /**
+     * Recursively generate children nodes until depth is achieved.
+     * @param depth Depth of AMR tree (number of levels).
+     */
+    void set_depth(int depth){
+        // Call head node to set depth.
+        this->head->set_depth(depth);
+    }
+
+
+    /**
      * Return pointer to the head Node.
      * @return Node pointer to head node.
      */
